@@ -35,10 +35,10 @@ public class JarSearcher {
             scanned = true;
             if (isMatch(ze)) {
                 ++numberOfHits;
-                System.out.printf("***Found file '%s' in %s\n", ze.getName(), m_fileEyeCatcher);
+                System.out.printf("*** Found file '%s' in %s\n", ze.getName(), m_fileEyeCatcher);
             } else if (/* m_searchFile.contains("jndilookup") && */ze.getName().toLowerCase().equals(META_INF)) {
                 final String eyeCatcher = m_fileEyeCatcher + " --> " + ze.getName();
-                List<String> manifestInfo = processMetaInf("Log4jReleaseV");
+                List<String> manifestInfo = processMetaInf("Log4jReleaseV", "Implementation-", "Specification-");
                 if (!manifestInfo.isEmpty()) {
                     processedManifestInfo = manifestInfo;
                 }
@@ -53,7 +53,7 @@ public class JarSearcher {
             }
         }
         if (scanned && 0 < numberOfHits && !processedManifestInfo.isEmpty()) {
-            System.out.println("***     Log4J version indicator found in " + m_fileEyeCatcher + ":");
+            System.out.println("***     Version information found in " + m_fileEyeCatcher + ":");
             for (String manifestEntry : processedManifestInfo) {
                 System.out.println("***         " + manifestEntry);
             }
@@ -65,7 +65,7 @@ public class JarSearcher {
 
     }
 
-    private List<String> processMetaInf(final String _startsWith) throws IOException {
+    private List<String> processMetaInf(final String... _startsWiths) throws IOException {
         InputStreamReader reader = new InputStreamReader(m_zis, "UTF-8");
         List<String> lines = new LinkedList<String>();
         String currentLine = "";
@@ -82,13 +82,15 @@ public class JarSearcher {
             }
         }
         lines.add(currentLine.trim());
-        if (null == _startsWith) {
+        if (0 == _startsWiths.length) {
             return lines;
         }
         List<String> ret = new LinkedList<String>();
         for (String line : lines) {
-            if (line.toLowerCase().startsWith(_startsWith.toLowerCase())) {
-                ret.add(line);
+            for (String startsWith : _startsWiths) {
+                if (line.toLowerCase().startsWith(startsWith.toLowerCase())) {
+                    ret.add(line);
+                }
             }
         }
         return ret;
