@@ -1,5 +1,7 @@
 # NestedJarSearcher
-A simple tool to search a jar/zip and all inner jar/zip files for a target filename
+A simple tool to search a jar/zip and all inner jar/zip files for a target filename.
+
+This tool will also print out Log4J versions located in any jar/zip files where there are hits for the target file.
 
 # To install
 - Download the .zip from the releases page
