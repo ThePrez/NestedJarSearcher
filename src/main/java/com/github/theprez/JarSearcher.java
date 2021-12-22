@@ -11,7 +11,6 @@ public class JarSearcher {
     private final String m_searchFile;
     private final String m_fileEyeCatcher;
     private static boolean s_verbose = false;
-    private final static String[] s_zipExtensions = new String[] { "zip", "ear", "war", "jar" };
 
     public JarSearcher(final ZipInputStream _zis, final String _fileEyeCatcher, final String _searchFile) {
         m_zis = _zis;
@@ -46,14 +45,5 @@ public class JarSearcher {
 
     private boolean isMatch(final ZipEntry ze) {
         return ze.getName().toLowerCase().contains(m_searchFile);
-    }
-
-    private boolean isNestedZip(final ZipEntry ze) {
-        for (final String ext : s_zipExtensions) {
-            if (ze.getName().toLowerCase().endsWith("." + ext)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

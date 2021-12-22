@@ -11,8 +11,8 @@ public class JarSearch {
             System.out.println("Usage: jarsearch <jar_to_search> <file_to_search_for>");
             System.exit(-5);
         }
-        String fileName = args[0];
-        String searchFile = args[1];
+        final String fileName = args[0];
+        final String searchFile = args[1];
 
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(fileName))) {
             final JarSearcher searcher = new JarSearcher(zis, new File(fileName).toURI().toString(), searchFile);
