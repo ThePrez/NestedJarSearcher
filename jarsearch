@@ -1,3 +1,13 @@
-#!/QOpenSys/pkgs/bin/bash
+#!/usr/bin/env sh
 export LC_ALL=EN_US.UTF-8
-exec /QOpenSys/pkgs/lib/jvm/openjdk-11/bin/java -cp $(dirname $0)/nestedjarsearch.jar com.github.theprez.JarSearch "$@"
+if [[ -z "$SSH_TTY" ]]; then
+  unset TERM
+else
+  export TERM=xterm
+fi
+if [[ "OS400" == $(uname) ]]; then
+  : ${JAVA_HOME=/QOpenSys/QIBM/ProdData/JavaVM/jdk80/64bit}
+  exec $JAVA_HOME/bin/java -cp $(dirname $0)/nestedjarsearch.jar com.github.theprez.JarSearch "$@"
+else
+  exec java -cp $(dirname $0)/nestedjarsearch.jar com.github.theprez.JarSearch "$@"
+fi
