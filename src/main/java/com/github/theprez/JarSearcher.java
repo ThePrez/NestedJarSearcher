@@ -1,12 +1,21 @@
 package com.github.theprez;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 public class JarSearcher {
 
+    // private static final Object LOG4J_VERSION_CLASS = "org/apache/logging/log4j/core/Version.class";
+    final String META_INF = "meta-inf/manifest.mf";
     private final ZipInputStream m_zis;
     private final String m_searchFile;
     private final String m_fileEyeCatcher;
@@ -21,11 +30,18 @@ public class JarSearcher {
     public int search() throws IOException {
         int numberOfHits = 0;
         boolean scanned = false;
+        List<String> processedManifestInfo = new LinkedList<String>();
         for (ZipEntry ze = m_zis.getNextEntry(); null != ze; ze = m_zis.getNextEntry()) {
             scanned = true;
             if (isMatch(ze)) {
                 ++numberOfHits;
                 System.out.printf("***Found file '%s' in %s\n", ze.getName(), m_fileEyeCatcher);
+            } else if (/* m_searchFile.contains("jndilookup") && */ze.getName().toLowerCase().equals(META_INF)) {
+                final String eyeCatcher = m_fileEyeCatcher + " --> " + ze.getName();
+                List<String> manifestInfo = processMetaInf("Log4jReleaseV");
+                if (!manifestInfo.isEmpty()) {
+                    processedManifestInfo = manifestInfo;
+                }
             } else {
                 final String eyeCatcher = m_fileEyeCatcher + " --> " + ze.getName();
                 try {
@@ -36,11 +52,46 @@ public class JarSearcher {
                 }
             }
         }
+        if (scanned && 0 < numberOfHits && !processedManifestInfo.isEmpty()) {
+            System.out.println("***     Log4J version indicator found in " + m_fileEyeCatcher + ":");
+            for (String manifestEntry : processedManifestInfo) {
+                System.out.println("***         " + manifestEntry);
+            }
+        }
         if (!scanned && s_verbose) {
             System.err.println("not a zip: " + m_fileEyeCatcher);
         }
         return numberOfHits;
 
+    }
+
+    private List<String> processMetaInf(final String _startsWith) throws IOException {
+        InputStreamReader reader = new InputStreamReader(m_zis, "UTF-8");
+        List<String> lines = new LinkedList<String>();
+        String currentLine = "";
+        for (int curInt = 0; curInt != -1; curInt = reader.read()) {
+            if (-1 == curInt) {
+                break;
+            }
+            char cur = (char) curInt;
+            if ('\n' == cur) {
+                lines.add(currentLine.trim());
+                currentLine = "";
+            } else {
+                currentLine += cur;
+            }
+        }
+        lines.add(currentLine.trim());
+        if (null == _startsWith) {
+            return lines;
+        }
+        List<String> ret = new LinkedList<String>();
+        for (String line : lines) {
+            if (line.toLowerCase().startsWith(_startsWith.toLowerCase())) {
+                ret.add(line);
+            }
+        }
+        return ret;
     }
 
     private boolean isMatch(final ZipEntry ze) {
