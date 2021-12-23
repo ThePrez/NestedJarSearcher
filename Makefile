@@ -1,7 +1,7 @@
 
 
 nestedjarsearch.jar: FORCE /QOpenSys/pkgs/lib/jvm/openjdk-11/bin/java /QOpenSys/pkgs/bin/mvn
-	JAVA_HOME=/QOpenSys/pkgs/lib/jvm/openjdk-11 /QOpenSys/pkgs/bin/mvn package
+	/QOpenSys/pkgs/bin/mvn package
 	rm -f ./nestedjarsearch.jar
 	cp target/nestedjarsearch-*-with-dependencies.jar ./nestedjarsearch.jar
 
@@ -11,9 +11,6 @@ nestedjarsearch.zip: jarsearch nestedjarsearch.jar /QOpenSys/pkgs/bin/zip
 FORCE:
 
 all: nestedjarsearch.zip
-
-uninstall: clean
-	rm -r ${INSTALL_ROOT}/QOpenSys/pkgs/lib/sc ${INSTALL_ROOT}/QOpenSys/pkgs/bin/sc jarsearch.jar
 
 clean:
 	rm -fr target
