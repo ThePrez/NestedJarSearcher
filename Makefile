@@ -6,7 +6,7 @@ nestedjarsearch.jar: FORCE
 	cp target/nestedjarsearch-*-with-dependencies.jar ./nestedjarsearch.jar
 
 nestedjarsearch.zip: jarsearch nestedjarsearch.jar
-	/QOpenSys/pkgs/bin/zip -0 nestedjarsearch.zip jarsearch nestedjarsearch.jar 
+	zip -0 nestedjarsearch.zip jarsearch nestedjarsearch.jar 
 
 FORCE:
 
