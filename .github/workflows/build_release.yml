@@ -21,7 +21,7 @@ jobs:
         java-version: '8'
         distribution: 'adopt'
         cache: maven
-    - name: Build 
+    - name: Build project
       run: make all
     - name: Create Release
       id: create_release
