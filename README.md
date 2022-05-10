@@ -16,6 +16,13 @@ find . -name \*.war -print -exec $HOME/jarsearch {} JndiLookup.class \;
 ```
 Grep for `'\*\*\*'` to only get information about "hits" printed out
 
+More comprehensively, for instance:
+```
+find . -name \*.war -print -exec $HOME/jarsearch {} JndiLookup.class \; | grep '\*\*\*'
+find . -name \*.ear -print -exec $HOME/jarsearch {} JndiLookup.class \; | grep '\*\*\*'
+find . -name \*.jar -print -exec $HOME/jarsearch {} JndiLookup.class \; | grep '\*\*\*'
+find . -name \*.zip -print -exec $HOME/jarsearch {} JndiLookup.class \; | grep '\*\*\*'
+```
 
 # Disclaimer
 As stated in [the license](LICENSE), this software is provided on an "AS IS" BASIS,
